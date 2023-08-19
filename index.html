@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div id="wrapper">
+		<div id="add_product_form">
+			<label for="product_sku">
+				<span>Product SKU</span> 
+				<input type="text" name="product_sku" id="product_sku">
+			</label>
+			<label for="product_name">
+				<span>Product Name</span> 
+				<input type="text" name="product_name" id="product_name">
+			</label>
+			<label for="product_price">
+				<span>Product Price</span> 
+				<input type="text" name="product_price" id="product_price">
+			</label>
+			<label for="product_quantity">
+				<span>Product Quantity</span> 
+				<input type="text" name="product_quantity" id="product_quantity">
+			</label>
+			<p class="submit">
+				<input type="button" name="add_product" id="add_product" value="Add Product" onclick="addRow();">
+			</p>
+		</div>
+		<div id="notification">
+			<div class="success">Product Added Successfully.<a href="#" class="close" onclick=" removeNoti();">X</a></div>
+			<div class="error">There is some problem.<p id="valid"></p><a href="#" class="close" onclick="removeNoti();">X</a></div>
+		</div>
+		<div id="product_list">
+			<table  onclick="deleteR(event)  ,editR(event)">
+				<tr>
+					<th>SKU</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Action</th>
+				</tr>
+				<!-- <tr>
+					<td>101</td>
+					<td>Product 101</td>
+					<td>$150.00</td>
+					<td>50</td>
+					<td><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
+				</tr>
+				<tr>
+					<td>102</td>
+					<td>Product 102</td>
+					<td>$100.00</td>
+					<td>20</td>
+					<td><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
+				</tr> -->
+			</table>
+		</div>
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+		<script>
+		//$('table').html("");
+       		var arr=[];
+
+		$(".success").hide();
+		$(".error").hide();
+        var flag=arr.length;
+		function addRow(){
+
+		   var sku=$("#product_sku").val();
+		   var name= $("#product_name").val();
+           var price= $("#product_price").val();
+		   var quan=$("#product_quantity").val();
+
+            $("#valid").html("");
+			if(sku==""||isNaN(sku)){
+				$("#valid").html("Sku field is empty or is a string");
+				$(".error").show();
+			$(".success").hide();
+		   }
+		   else if(name==""||!isNaN(name)){
+			   $("#valid").html("name field is empty or is a number");
+			   $(".error").show();
+			$(".success").hide();
+		   }
+		   
+		   else if(price==""||isNaN(price)){
+			   $("#valid").html("price field is empty or is a string").show();
+			   $(".error").show();
+			$(".success").hide();
+		   }
+		   else if(quan==""||isNaN(quan)){
+			   $("#valid").html("quan field is empty or is a string").show();
+			   $(".error").show();
+			  $(".success").hide();
+		   }
+		   else{
+                
+			let obj={
+				pro_sku:sku,
+				pro_name:name,
+				pro_price:price,
+			    pro_quantity:quan,
+
+			}
+			arr.splice(flag,1,obj);
+			flag=arr.length;
+					
+            $("#add_product").val("Add Product");
+			
+			$(".success").html("added row.").show();
+			$(".error").hide();
+		   }
+			
+			updateTable();
+
+		}
+
+		//-----function to remove notification----------
+		function removeNoti(){
+			$("#notification").on("click",".close",function(event){
+				$(event.target).parent().hide();  
+			});
+		}
+
+		function updateTable(){
+			$('table tbody tr:first').nextAll().remove();
+			for(let x in arr){
+			var column="";
+			for(let y in arr[x]){
+				column+="<td>"+arr[x][y]+"</td>"; //adding td 
+			}
+			column+="<td><a href='#' class='edit'>Edit</a><a href='#' class='delete'>Delete</a></td>"; //adding edit and delete button	
+			row="<tr>"+column+"</td>"; // adding the column values to the row
+			
+				$("table").append (row);
+		}
+		$("#product_sku").val("");
+		$("#product_name").val("");
+		$("#product_price").val("");
+		$("#product_quantity").val("");
+		
+	}   
+		
+		function deleteR(event){
+
+ //---------when clicked on delete button-----------		
+
+			$("table").on("click",".delete",function(event){
+			//    if(confirm("Do you want to delete?")){
+				$(this).closest("tr").remove();
+				$(".error").hide();
+			    $(".success").html("row is successfully deleted.").show();
+			});
+		}
+//-------------code when clicked on edit button----------
+
+        function  editR(event){
+	       $("table").on("click",".edit",function(event){
+		
+			// console.log(arr)
+			indVal=$(event.target).parents("tr").index()-1;
+
+			pro_sku=arr[indVal].pro_sku;
+			$("#product_sku").val(pro_sku);	
+
+			pro_name=arr[indVal].pro_name;
+			$("#product_name").val(pro_name);	
+
+			pro_price=arr[indVal].pro_price;
+			$("#product_price").val(pro_price);	
+
+			pro_quantity=arr[indVal].pro_quantity;
+			$("#product_quantity").val(pro_quantity);
+				
+			$("#add_product").val("Update Product");
+			
+			flag=indVal;
+	     });
+        }
+
+		
+	</script>
+</body>
+</html>
